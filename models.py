@@ -6,21 +6,16 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
 def train(X_train, y_train, name='logistic_regression', **kwargs):
-    if name == 'logistic_regression':
-        return _logistic_regression(X_train, y_train, **kwargs)
-    if name == 'decision_tree':
-        return _decision_tree(X_train, y_train, **kwargs)
-    if name == 'gradient_boosting_machines':
-        return _gradient_boosting_machines(X_train, y_train, **kwargs)
-    if name == 'naive_bayes':
-        return _naive_bayes(X_train, y_train, **kwargs)
-    if name == 'random_forest':
-        return _random_forest(X_train, y_train, **kwargs)
-    if name == 'support_vector_machines':
-        return _support_vector_machines(X_train, y_train, **kwargs)
-    if name == 'k_nearest_neighbours':
-        return _k_nearest_neighbours(X_train, y_train, **kwargs)
-
+    methods = {
+        'logistic_regression': _logistic_regression,
+        'decision_tree': _decision_tree,
+        'gradient_boosting_machines': _gradient_boosting_machines,
+        'naive_bayes': _naive_bayes,
+        'random_forest': _random_forest,
+        'support_vector_machines': _support_vector_machines,
+        'k_nearest_neighbours': _k_nearest_neighbours
+    }
+    return methods[name](X_train, y_train, **kwargs)
 
 def _logistic_regression(X_train, y_train, **kwargs):
     model = LogisticRegression(**kwargs)
