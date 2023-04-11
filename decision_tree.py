@@ -17,12 +17,12 @@ data = data.dropna()
 data_encoded = pd.get_dummies(data)
 
 # Split the data into training and testing sets
-X = data_encoded.drop('deposit_yes', axis=1)
+X = data_encoded.drop(['deposit_yes', 'deposit_no'], axis=1)
 y = data_encoded['deposit_yes']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=60)
 
 # Initialize decision tree classifier
-clf = DecisionTreeClassifier(random_state=42)
+clf = DecisionTreeClassifier(random_state=60)
 
 # Train decision tree classifier
 clf.fit(X_train, y_train)

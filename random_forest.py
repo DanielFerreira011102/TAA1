@@ -16,12 +16,12 @@ data = data.dropna()
 data_encoded = pd.get_dummies(data)
 
 # Split the data into training and testing sets
-X = data_encoded.drop('deposit_yes', axis=1)
+X = data_encoded.drop(['deposit_yes', 'deposit_no'], axis=1)
 y = data_encoded['deposit_yes']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=60)
 
 # Creating the Random Forest classifier
-rfc = RandomForestClassifier(n_estimators=100, random_state=42)
+rfc = RandomForestClassifier(n_estimators=100, random_state=60)
 
 # Fitting the classifier to the training data
 rfc.fit(X_train, y_train)
