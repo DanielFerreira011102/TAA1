@@ -17,16 +17,9 @@ def plot_confusion_matrix(y_test, y_pred):
     plt.show()
 
 def plot_roc(model, X_test, y_test):
-    # Get the predicted probabilities for the testing set
     y_pred_prob = model.predict_proba(X_test)[:, 1]
-
-    # Calculate the false positive rate, true positive rate, and threshold values
     fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob)
-
-    # Calculate the area under the ROC curve (AUC)
     roc_auc = auc(fpr, tpr)
-
-    # Plot the ROC curve
     plt.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % roc_auc)
     plt.plot([0, 1], [0, 1], 'k--')  # Add a dashed diagonal line for comparison
     plt.xlim([0.0, 1.0])
