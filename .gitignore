@@ -75,6 +75,9 @@ docs/_build/
 .pybuilder/
 target/
 
+# Except the directory 'assets/target'
+!assets/target/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 

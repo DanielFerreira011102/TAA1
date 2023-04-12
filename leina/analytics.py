@@ -47,3 +47,10 @@ def plot_decision_tree(clf, column_values):
     plt.figure(figsize=(20, 12), dpi=100)
     plot_tree(clf, feature_names=column_values, class_names=["no", "yes"], filled=True, fontsize=10, max_depth=3)
     plt.show()
+
+def plot_feature_importance(model, features):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(x=model.feature_importances_, y=features, ax=ax, orient='h')
+    ax.set_title('Feature Importance')
+    plt.tight_layout()
+    plt.show()

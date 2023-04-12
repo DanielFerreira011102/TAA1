@@ -1,15 +1,19 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from leina.analytics import get_report, plot_confusion_matrix, plot_roc, plot_decision_tree, get_best
+from sklearn.model_selection import train_test_split, GridSearchCV
+from xgboost import XGBClassifier
+
+from leina.analytics import get_report, plot_confusion_matrix, plot_roc, plot_decision_tree, get_best, \
+    plot_feature_importance
 from leina.models import train
-from leina.preprocessing import split_data, one_hot_encode, label_encode
+from leina.preprocessing import split_data, one_hot_encode, label_encode, ordinal_encode, standard_scale
 from utils import Logger, LogLevel
 
 logger = Logger(level=LogLevel.INFO)
 
 data = pd.read_csv('bank.csv')
 X, y = split_data(data)
-X = one_hot_encode(X, mode='pandas')
+X = one_hot_encode(X)
+features = X.columns
 y = label_encode(y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=60)
 
@@ -103,6 +107,92 @@ def run_k_nearest_neighbours():
     accuracy_map['k_nearest_neighbours'] = accuracy_score
 
 
+# Adaboost
+def run_adaboost():
+    logger.info('Running Adaboost')
+
+    ada = train(X_train, y_train, name='adaboost')
+    y_pred = ada.predict(X_test)
+
+    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+
+    accuracy_map['adaboost'] = accuracy_score
+
+
+# Xgboost
+def run_xgboost():
+    logger.info('Running Xgboost')
+
+    xgb = train(X_train, y_train, name='xgboost')
+    y_pred = xgb.predict(X_test)
+
+    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+
+    accuracy_map['xgboost'] = accuracy_score
+
+    plot_feature_importance(xgb, features)
+
+
+# Multi Layer Perceptron
+def run_multi_layer_perceptron():
+    logger.info('Running Multi Layer Perceptron')
+
+    mlp = train(X_train, y_train, name='multi_layer_perceptron')
+    y_pred = mlp.predict(X_test)
+
+    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+
+    accuracy_map['multi_layer_perceptron'] = accuracy_score
+
+
+# Ridge Classifier
+def run_ridge_classifier():
+    logger.info('Running Ridge Classifier')
+
+    rc = train(X_train, y_train, name='ridge_classifier')
+    y_pred = rc.predict(X_test)
+
+    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+
+    accuracy_map['ridge_classifier'] = accuracy_score
+
+
+# Passive Aggressive Classifier
+def run_passive_aggressive_classifier():
+    logger.info('Running Passive Aggressive Classifier')
+
+    pac = train(X_train, y_train, name='passive_aggressive_classifier')
+    y_pred = pac.predict(X_test)
+
+    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+
+    accuracy_map['passive_aggressive_classifier'] = accuracy_score
+
+
+# Extremely Randomized Trees
+def run_extremely_randomized_trees():
+    logger.info('Running Extremely Randomized Trees')
+
+    ert = train(X_train, y_train, name='extremely_randomized_trees')
+    y_pred = ert.predict(X_test)
+
+    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+
+    accuracy_map['extremely_randomized_trees'] = accuracy_score
+
+
+# LightGBM
+def run_lightgbm_classifier():
+    logger.info('Running LightGBM Classifier')
+
+    lgbm = train(X_train, y_train, name='lightgbm_classifier')
+    y_pred = lgbm.predict(X_test)
+
+    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+
+    accuracy_map['lightgbm_classifier'] = accuracy_score
+
+
 # Ranking
 def run_ranking():
     logger.info('Ranking')
@@ -139,6 +229,32 @@ def run_loop_k_nearest_neighbours():
 
     get_best(knn_accuracy_map)
 
+# Best Xgboost
+def run_best_xgboost():
+    logger.info('Running Best Xgboost')
+
+    # Step 1: Model selection
+    xgb = XGBClassifier()
+    param_grid = {
+        'learning_rate': [0.01, 0.1, 0.3],
+        'max_depth': [3, 5, 7],
+        'n_estimators': [50, 100, 200],
+    }
+    grid_search = GridSearchCV(xgb, param_grid=param_grid, cv=5)
+    grid_search.fit(X_train, y_train)
+
+    # Step 2: Hyperparameter tuning
+    best_params = grid_search.best_params_
+    xgb = train(X_train, y_train, name="xgboost", **best_params)
+
+    # Step 3: Ensemble learning (if needed)
+
+    # Step 4: Model evaluation
+    y_pred = xgb.predict(X_test)
+    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+
+    accuracy_map['best_xgboost_classifier'] = accuracy_score
+
 
 if __name__ == "__main__":
     run_logistic_regression()
@@ -148,6 +264,14 @@ if __name__ == "__main__":
     run_random_forest()
     run_naive_bayes()
     run_k_nearest_neighbours()
+    run_adaboost()
+    run_xgboost()
+    run_multi_layer_perceptron()
+    run_ridge_classifier()
+    run_passive_aggressive_classifier()
+    run_extremely_randomized_trees()
+    run_lightgbm_classifier()
+    # run_best_xgboost()
     run_ranking()
     run_loop_logistic_regression()
     run_loop_k_nearest_neighbours()
