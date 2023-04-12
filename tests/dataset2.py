@@ -8,6 +8,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
+from leina.analytics import get_report, plot_feature_importance
+from leina.models import train
+
 """https://medium.com/@nutanbhogendrasharma/deal-banking-marketing-campaign-dataset-with-machine-learning-9c1f84ad285d"""
 
 df = pd.read_csv('../bank.csv')
@@ -119,9 +122,7 @@ months = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6, 'jul': 7, 
           'nov': 11, 'dec': 12}
 df['month'] = df['month'].map(months)
 
-df['was_contacted'] = df['pdays'].apply(lambda row: 0 if row == -1 else 1)
-
-df.drop(['job', 'education', 'marital', 'default', 'housing', 'loan', 'contact', 'pdays', 'poutcome', 'deposit'],
+df.drop(['job', 'education', 'marital', 'default', 'housing', 'loan', 'contact', 'poutcome', 'deposit'],
         axis=1, inplace=True)
 
 print(df.dtypes)
@@ -172,3 +173,10 @@ print("Actual value: ", y_test[:10])
 
 accuracy = accuracy_score(y_pred=y_pred, y_true=y_test)
 print(f'Accuracy of the Decision Tree Classifier model is {accuracy * 100:.2f}%')
+
+print('Xgboost')
+
+xgb = train(X_train, y_train, name='xgboost')
+y_pred = xgb.predict(X_test)
+accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+plot_feature_importance(xgb, features=X.columns)
