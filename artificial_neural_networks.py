@@ -3,8 +3,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense, Dropout
-from analytics import print_report
-from preprocessing import one_hot_encode, split_data, label_encode
+from leina.analytics import print_report
+from leina.preprocessing import one_hot_encode, split_data, label_encode
 
 data = pd.read_csv('bank.csv')
 

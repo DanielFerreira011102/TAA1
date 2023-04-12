@@ -1,5 +1,6 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, OrdinalEncoder
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder, OrdinalEncoder, StandardScaler
+
 
 def split_data(data, target_col=None):
     data = data.dropna()
@@ -25,3 +26,7 @@ def one_hot_encode(X, mode='pandas', **kwargs):
 def ordinal_encode(X, mode='sklearn', **kwargs):
     if mode == 'sklearn':
         return OrdinalEncoder().fit_transform(X, **kwargs)
+
+def standard_scale(X, mode='sklearn', **kwargs):
+    if mode == 'sklearn':
+        return StandardScaler().fit_transform(X, **kwargs)

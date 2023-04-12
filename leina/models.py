@@ -18,9 +18,9 @@ def train(X_train, y_train, name='logistic_regression', **kwargs):
     return methods[name](X_train, y_train, **kwargs)
 
 def _logistic_regression(X_train, y_train, **kwargs):
-    model = LogisticRegression(**kwargs)
-    model.fit(X_train, y_train)
-    return model
+    lr = LogisticRegression(**kwargs)
+    lr.fit(X_train, y_train)
+    return lr
 
 
 def _decision_tree(X_train, y_train, **kwargs):

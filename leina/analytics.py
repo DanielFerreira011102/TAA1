@@ -3,10 +3,23 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import seaborn as sns
 from sklearn.tree import plot_tree
 
-def print_report(y_test, y_pred):
-    print("Accuracy score:", accuracy_score(y_test, y_pred))
-    print("Confusion matrix:\n", confusion_matrix(y_test, y_pred))
-    print("Classification report:\n", classification_report(y_test, y_pred))
+def get_best(accuracy_map, out=True):
+    sorted_accuracy_map = sorted(accuracy_map.items(), key=lambda x: x[1], reverse=True)
+    if out:
+        for i, (k, v) in enumerate(sorted_accuracy_map, start=1):
+            print(f"{i}. {k} ({v})")
+        print()
+    return sorted_accuracy_map
+def get_report(y_test, y_pred, out=True):
+    accuracy_score_ = accuracy_score(y_test, y_pred)
+    confusion_matrix_ = confusion_matrix(y_test, y_pred)
+    classification_report_ = classification_report(y_test, y_pred)
+    if out:
+        print("Accuracy score:", accuracy_score_)
+        print("Confusion matrix:\n", confusion_matrix_)
+        print("Classification report:\n", classification_report_)
+        print()
+    return accuracy_score_, confusion_matrix_, classification_report_
 
 
 def plot_confusion_matrix(y_test, y_pred):
@@ -31,6 +44,6 @@ def plot_roc(model, X_test, y_test):
     plt.show()
 
 def plot_decision_tree(clf, column_values):
-    plt.figure(figsize=(20, 10))
-    plot_tree(clf, feature_names=column_values, class_names=["no", "yes"], filled=True)
+    plt.figure(figsize=(20, 12), dpi=100)
+    plot_tree(clf, feature_names=column_values, class_names=["no", "yes"], filled=True, fontsize=10, max_depth=3)
     plt.show()
