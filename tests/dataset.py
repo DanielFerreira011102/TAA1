@@ -66,6 +66,11 @@ for col in df.columns:
     print(col, ':', df[col].nunique(), 'unique values')
 
 logger.info('Remove duration', nl=True)
+print("""Important note: this attribute highly affects the output target (e.g., if duration=0 then y=’no’).
+Yet, the duration is not known before a call is performed. Also, after the end of the call y is obviously known.
+Thus, this input should only be included for benchmark purposes and should be discarded if the intention is to have
+a realistic predictive model.""")
+
 df = df.drop('duration', axis=1)
 
 # Print the count of missing values in each column
