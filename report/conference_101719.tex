@@ -39,30 +39,89 @@ component, formatting, style, styling, insert
 \end{IEEEkeywords}
 
 \section{Introduction}
-This document is a model and instructions for \LaTeX.
-Please observe the conference page limits. 
+This project aims to apply machine learning algorithms to solve a classification problem in data science. Specifically, we will use a dataset related to direct marketing campaigns of a Portuguese banking institution to predict whether a client will subscribe or not to a term deposit. The dataset contains information on client demographics, previous marketing interactions, and economic indicators.
 
-\section{Ease of Use}
+We will explore various machine learning algorithms, including logistic regression, decision trees, and random forests, to build models and evaluate their performance using appropriate metrics. Through this project, we hope to gain practical experience in data science while addressing a real-world problem.
 
-\subsection{Maintaining the Integrity of the Specifications}
+\section{State of Art}
+The bank marketing dataset has been widely used in the machine learning community, and there are numerous studies, reports, and solutions available online that are easy to find. In this section, we review some of the most relevant and recent works on this dataset, highlighting their main contributions and limitations.
 
-The IEEEtran class file is used to format your paper and style the text. All margins, 
-column widths, line spaces, and text fonts are prescribed; please do not 
-alter them. You may note peculiarities. For example, the head margin
-measures proportionately more than is customary. This measurement 
-and others are deliberate, using specifications that anticipate your paper 
-as one part of the entire proceedings, and not as an independent document. 
-Please do not revise any of the current designations.
+One of the earliest works on the bank marketing dataset was presented by Moro et al. \cite{moro2014data}, who compared the performance of several classification algorithms, including decision trees, random forests, neural networks, and support vector machines. They found that the neural network algorithm achieved the best results, with an AUC of 0.8 and ALIFT of 0.7. By selecting the half better classified clients, they were able to reach 79\% of the subscribers. However, they did not perform any feature selection or preprocessing, which may have influenced their results.
 
-\section{Prepare Your Paper Before Styling}
-Before you begin to format your paper, first write and save the content as a 
-separate text file. Complete all content and organizational editing before 
-formatting. Please note sections \ref{AA}--\ref{SCM} below for more information on 
-proofreading, spelling and grammar.
+In a more recent study, Elsalamony \cite{elsalamony2019bank} proposed a comparative analysis of several data mining techniques applied to the bank marketing dataset. They explored various algorithms, including decision trees, neural networks, and support vector machines, and found that the C5.0 decision tree algorithm performed the best overall.
 
-Keep your text and graphic files separate until after the text has been 
-formatted and styled. Do not number text heads---{\LaTeX} will do that 
-for you.
+These studies demonstrate the importance of proper feature selection and preprocessing in achieving accurate predictions on the bank marketing dataset, and suggest that hybrid models combining clustering algorithms and decision trees, as well as genetic algorithms with PCA, may lead to improved performance.
+
+\section{Dataset}
+The Bank Marketing Dataset is publicly available in the Machine Learning Repository (UCI) as well as on Kaggle. It includes 11,162 observations and 17 features.
+
+The seventeen features are briefly described in Table \ref{tab1}, where the original feature name in the dataset is presented in the right column along with its corresponding description.
+
+\begin{table}[htbp]
+\caption{Features description of the Bank Marketing Dataset}
+\label{tab1}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Feature} & \textbf{Description} \\
+\hline
+deposit & has the client subscribed a term deposit? (yes, no) \\
+\hline
+age & age of the client, numeric \\
+\hline
+job & type of job, twelve categories \\
+\hline
+marital & marital status, three categories \\
+\hline
+education & level of education, four categories \\
+\hline
+default & has credit in default? (yes, no) \\
+\hline
+balance & balance of the client, numeric \\
+\hline
+housing & has housing loan? (yes, no) \\
+\hline
+loan & has personal loan? (yes, no) \\
+\hline
+contact & communication type (cellular, telephone, unknown) \\
+\hline
+day & last contact day of month, numeric \\
+\hline
+month & last contact month of year (twelve levels, months) \\
+\hline
+duration & duration of the last contact in seconds, numeric \\
+\hline
+campaign & contacts performed during this campaign, numeric \\
+\hline
+pdays & days since last contact in a previous campaign, numeric \\
+\hline
+previous & contacts performed before this campaign, numeric \\
+\hline
+poutcome & previous marketing campaign result, four categories \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Data exploration}
+Null values
+Categorical vs Numeric
+Unique values
+Duration feature?
+Number of values for each feature
+Categories / max-mins for eacg feature
+Plots
+Correlations
+Observations
+
+\subsection{Data Descriptives}
+
+\subsection{Data Visualization}
+
+\section{Feature Engineering}
+encoders
+clean dataset
+Summary of feature engineering
 
 \subsection{Abbreviations and Acronyms}\label{AA}
 Define abbreviations and acronyms the first time they are used in the text, 
@@ -196,7 +255,7 @@ copy& More table copy$^{\mathrm{a}}$& &  \\
 \hline
 \multicolumn{4}{l}{$^{\mathrm{a}}$Sample of a Table footnote.}
 \end{tabular}
-\label{tab1}
+\label{tab2}
 \end{center}
 \end{table}
 
@@ -245,13 +304,10 @@ For papers published in translation journals, please give the English
 citation first, followed by the original foreign-language citation \cite{b6}.
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+\bibitem{moro2014data}
+S. Moro, P. Cortez, and P. Rita, ``A data-driven approach to predict the success of bank telemarketing," Decision Support Systems, vol. 62, pp. 22-31, 2014.
+\bibitem{elsalamony2019bank}
+H. Elsalamony, ``Bank Direct Marketing Analysis of Data Mining Techniques," in \emph{2019 International Conference on Computer and Information Sciences (ICCIS)}, Cairo, Egypt, 2019, pp. 1-6, doi: 10.1109/ICCISci.2019.8932787.
 \end{thebibliography}
 \vspace{12pt}
 \color{red}

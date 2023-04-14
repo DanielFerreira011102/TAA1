@@ -5,16 +5,18 @@ from xgboost import XGBClassifier
 from leina.analytics import get_report, plot_confusion_matrix, plot_roc, plot_decision_tree, get_best, \
     plot_feature_importance
 from leina.models import train
-from leina.preprocessing import split_data, one_hot_encode, label_encode, ordinal_encode, standard_scale
+from leina.preprocessing import split_data, one_hot_encode, label_encode, ordinal_encode, standard_scale, full_clean
 from utils import Logger, LogLevel
 
 logger = Logger(level=LogLevel.INFO)
 
 data = pd.read_csv('bank.csv')
-X, y = split_data(data)
-X = one_hot_encode(X)
+new_data = full_clean(data)
+X, y = split_data(new_data, target_col='target')
+print(X, y)
+# X = one_hot_encode(X)
 features = X.columns
-y = label_encode(y)
+# y = label_encode(y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=60)
 
 accuracy_map = {}
