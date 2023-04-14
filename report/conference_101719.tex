@@ -5,6 +5,7 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
+\usepackage{caption}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -20,10 +21,10 @@
 \textit{Universidade de Aveiro (DETI)}\\
 djbf@ua.pt}
 \and
-\IEEEauthorblockN{Alexandre Gazur (N\textsuperscript{o} 999999)}
+\IEEEauthorblockN{Alexandre Gazur (N\textsuperscript{o} 102751)}
 \IEEEauthorblockA{
 \textit{Universidade de Aveiro (DETI)}\\
-example@gmail.com}
+alexandre.gazur@ua.pt}
 }
 
 \maketitle
@@ -65,7 +66,7 @@ The seventeen features are briefly described in Table \ref{tab1}, where the orig
 \hline
 \textbf{Feature} & \textbf{Description} \\
 \hline
-deposit & has the client subscribed a term deposit? (yes, no) \\
+deposit & has the client subscribed to a term deposit? (yes, no) \\
 \hline
 age & age of the client, numeric \\
 \hline
@@ -79,21 +80,21 @@ default & has credit in default? (yes, no) \\
 \hline
 balance & balance of the client, numeric \\
 \hline
-housing & has housing loan? (yes, no) \\
+housing & has a housing loan? (yes, no) \\
 \hline
-loan & has personal loan? (yes, no) \\
+loan & has a personal loan? (yes, no) \\
 \hline
 contact & communication type (cellular, telephone, unknown) \\
 \hline
-day & last contact day of month, numeric \\
+day & last contact day of the month, numeric \\
 \hline
-month & last contact month of year (twelve levels, months) \\
+month & last contact month of the year (twelve levels, months) \\
 \hline
 duration & duration of the last contact in seconds, numeric \\
 \hline
 campaign & contacts performed during this campaign, numeric \\
 \hline
-pdays & days since last contact in a previous campaign, numeric \\
+pdays & days since the last contact in a previous campaign, numeric \\
 \hline
 previous & contacts performed before this campaign, numeric \\
 \hline
@@ -104,19 +105,25 @@ poutcome & previous marketing campaign result, four categories \\
 \end{table}
 
 \section{Data exploration}
-Null values
-Categorical vs Numeric
-Unique values
-Duration feature?
-Number of values for each feature
-Categories / max-mins for eacg feature
-Plots
-Correlations
-Observations
 
-\subsection{Data Descriptives}
+The target variable of interest is the "deposit" column, which has two possible values: "yes" and "no". The prevalence of the positive class is approximately 0.474, indicating that the two classes are relatively balanced.
 
-\subsection{Data Visualization}
+The majority of the columns are of object type, or categorical variables, that need to be converted into numerical data.
+
+The data appears complete, with no missing values observed across any of the columns. This indicates that the data is of good quality and can be used for further analysis.
+
+There are varying levels of granularity for each column. For instance, the "age" column has 76 unique values, whereas the "housing" column only has 2 unique values. This suggests that some columns may be more useful than others for modelling purposes, and that feature engineering may be necessary to extract the most useful information.
+
+The "duration" attribute in the dataset represents the duration of the last contact and has a significant impact on the output target. As the duration is only known after the call has ended, it is advisable to include this input only for benchmarking purposes. In realistic predictive modelling, this feature should be discarded.
+
+
+\begin{figure}[htbp]
+\centering
+\centerline{\includegraphics[width=1.2\columnwidth] {assets/features/numeric/heat.png}}
+\captionsetup{justification=centering, margin={0cm,1cm}}
+\caption{Correlation heatmap of numeric features.}
+\label{fig_corr}
+\end{figure}
 
 \section{Feature Engineering}
 encoders
