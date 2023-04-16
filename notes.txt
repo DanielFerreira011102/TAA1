@@ -1,0 +1,1 @@
+"leakage" feature (leakage of information from the future to the present) can lead to overestimation of the model's performance during training and validation. -> discarded to prevent overfitting and ensure the model's generalizability to new data

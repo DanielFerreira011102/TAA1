@@ -56,9 +56,6 @@ plt.subplots_adjust(bottom=.2)
 plt.tight_layout()
 plt.show()
 
-
-raise Exception
-
 plt.figure()
 # Visualize distribution of dataset information
 g = sns.PairGrid(df, vars=numeric_col, hue='deposit')
