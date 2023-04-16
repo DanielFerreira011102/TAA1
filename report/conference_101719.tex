@@ -78,7 +78,7 @@ education & level of education, four categories \\
 \hline
 default & has credit in default? (yes, no) \\
 \hline
-balance & account balance of the client, numeric \\
+balance & balance of the client, numeric \\
 \hline
 housing & has a housing loan? (yes, no) \\
 \hline
@@ -114,15 +114,13 @@ The data appears complete, with no missing values observed across any of the col
 
 There are varying levels of granularity for each column. For instance, the "age" column has 76 unique values, whereas the "housing" column only has 2 unique values. This suggests that some columns may be more useful than others for modelling purposes, and that feature engineering may be necessary to extract the most useful information.
 
-The "duration" attribute in the dataset represents the duration of the last contact and has a significant impact on the output target. As the duration is only known after the call has ended, it is advisable to include this input only for benchmarking purposes. In realistic predictive modelling, this feature should be discarded.
-
+The "duration" attribute in the dataset represents the duration of the last contact and has a significant impact on the output target, as can be seen in Figure \ref{fig_corr_biserial}. As the duration is only known after the call has ended, it is advisable to include this input only for benchmarking purposes. In realistic predictive modelling, this feature should be discarded.
 
 \begin{figure}[htbp]
 \centering
-\centerline{\includegraphics[width=1.2\columnwidth] {assets/features/numeric/heat.png}}
-\captionsetup{justification=centering, margin={0cm,1cm}}
-\caption{Correlation heatmap of numeric features.}
-\label{fig_corr}
+\centerline{\includegraphics[width=\columnwidth] {assets/features/corr_to_target_fit.png}}
+\caption{Point-Biserial correlation of every feature to target.}
+\label{fig_corr_biserial}
 \end{figure}
 
 \section{Feature Engineering}
