@@ -23,8 +23,11 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 accuracy_map = {}
 
 # General Function
-def run_model(name, **kwargs):
-    logger.info(f'Running {name}')
+def run_model(name, natural_name=None, **kwargs):
+    if not natural_name:
+        natural_name = name
+    logger.info(f'Running {natural_name}')
+
 
     lr = train(X_train, y_train, name=name, **kwargs)
     y_pred = lr.predict(X_test)
@@ -33,7 +36,7 @@ def run_model(name, **kwargs):
     #plot_confusion_matrix(y_test, y_pred)
     #plot_roc(lr, X_test, y_test)
 
-    accuracy_map[name] = accuracy_score
+    accuracy_map[natural_name] = accuracy_score
 
 # Logistic Regression
 def run_logistic_regression(**kwargs):
@@ -192,7 +195,8 @@ def read_best_parameters(function_name):
 
 if __name__ == "__main__":
     function_names = [
-        {'name': "LogisticRegression", 'max_iter': 10000},
+        {'name': "LogisticRegression", 'max_iter': 10000, 'penalty': 'l2'},
+        {'name': "LogisticRegression", 'max_iter': 10000, 'penalty': None, 'natural_name': "LogisticsRegressionUnregularized"},
         {'name': "DecisionTreeClassifier"},
         {'name': "GradientBoostingClassifier"},
         {'name': "SVC"},
@@ -208,8 +212,8 @@ if __name__ == "__main__":
         {'name': "LGBMClassifier"},
     ]
 
-    #for args in function_names:
-        #run_model(**args)
+    for args in function_names:
+        run_model(**args)
 
     grid_vals = {'penalty': ['l2'], 'C': [0.001, 0.01, 0.1, 1, 2, 5, 10]}
 
