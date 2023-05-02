@@ -1,1 +1,1 @@
-LogisticRegression,C=1,penalty=l2
+LogisticRegression,C=2,penalty=l2
