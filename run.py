@@ -4,9 +4,10 @@ from xgboost import XGBClassifier
 
 from leina.analytics import get_report, plot_confusion_matrix, plot_roc, plot_decision_tree, get_best, \
     plot_feature_importance
-from leina.models import train
+from leina.models import train, return_function_name
 from leina.preprocessing import split_data, one_hot_encode, label_encode, ordinal_encode, standard_scale, full_clean
 from utils import Logger, LogLevel
+from sklearn.model_selection import GridSearchCV
 
 logger = Logger(level=LogLevel.INFO)
 
@@ -21,12 +22,24 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 accuracy_map = {}
 
+# General Function
+def run_model(name, **kwargs):
+    logger.info(f'Running {name}')
+
+    lr = train(X_train, y_train, name=name, **kwargs)
+    y_pred = lr.predict(X_test)
+
+    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
+    #plot_confusion_matrix(y_test, y_pred)
+    #plot_roc(lr, X_test, y_test)
+
+    accuracy_map[name] = accuracy_score
 
 # Logistic Regression
-def run_logistic_regression():
+def run_logistic_regression(**kwargs):
     logger.info('Running Logistic Regression')
 
-    lr = train(X_train, y_train, name='LogisticRegression', max_iter=10000)
+    lr = train(X_train, y_train, name='LogisticRegression', max_iter=10000, **kwargs)
     y_pred = lr.predict(X_test)
 
     accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
@@ -48,79 +61,6 @@ def run_decision_tree():
 
     accuracy_map['decision_tree'] = accuracy_score
 
-
-# Gradient Boosting Machines
-def run_gradient_boosting_machines():
-    logger.info('Running Gradient Boosting Machines')
-
-    gbm = train(X_train, y_train, name='GradientBoostingClassifier')
-    y_pred = gbm.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['gradient_boosting_machines'] = accuracy_score
-
-
-# Support Vector Machines
-def run_support_vector_machines():
-    logger.info('Running Support Vector Machines')
-
-    svm = train(X_train, y_train, name='SVC')
-    y_pred = svm.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['support_vector_machines'] = accuracy_score
-
-
-# Random Forest
-def run_random_forest():
-    logger.info('Running Random Forest')
-
-    rfc = train(X_train, y_train, name='RandomForestClassifier')
-    y_pred = rfc.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['random_forest'] = accuracy_score
-
-
-# Naive Bayes
-def run_naive_bayes():
-    logger.info('Running Naive Bayes')
-
-    nb = train(X_train, y_train, name='GaussianNB')
-    y_pred = nb.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['naive_bayes'] = accuracy_score
-
-
-# K-Nearest Neighbours
-def run_k_nearest_neighbours():
-    logger.info('Running K-Nearest Neighbours')
-
-    knn = train(X_train, y_train, name='KNeighborsClassifier')
-    y_pred = knn.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['k_nearest_neighbours'] = accuracy_score
-
-
-# Adaboost
-def run_adaboost():
-    logger.info('Running Adaboost')
-
-    ada = train(X_train, y_train, name='AdaBoostClassifier')
-    y_pred = ada.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['adaboost'] = accuracy_score
-
-
 # Xgboost
 def run_xgboost():
     logger.info('Running Xgboost')
@@ -133,66 +73,6 @@ def run_xgboost():
     accuracy_map['xgboost'] = accuracy_score
 
     plot_feature_importance(xgb, features)
-
-
-# Multi Layer Perceptron
-def run_multi_layer_perceptron():
-    logger.info('Running Multi Layer Perceptron')
-
-    mlp = train(X_train, y_train, name='MLPClassifier')
-    y_pred = mlp.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['multi_layer_perceptron'] = accuracy_score
-
-
-# Ridge Classifier
-def run_ridge_classifier():
-    logger.info('Running Ridge Classifier')
-
-    rc = train(X_train, y_train, name='RidgeClassifier')
-    y_pred = rc.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['ridge_classifier'] = accuracy_score
-
-
-# Passive Aggressive Classifier
-def run_passive_aggressive_classifier():
-    logger.info('Running Passive Aggressive Classifier')
-
-    pac = train(X_train, y_train, name='PassiveAggressiveClassifier')
-    y_pred = pac.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['passive_aggressive_classifier'] = accuracy_score
-
-
-# Extremely Randomized Trees
-def run_extremely_randomized_trees():
-    logger.info('Running Extremely Randomized Trees')
-
-    ert = train(X_train, y_train, name='ExtraTreesClassifier')
-    y_pred = ert.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['extremely_randomized_trees'] = accuracy_score
-
-
-# LightGBM
-def run_lightgbm_classifier():
-    logger.info('Running LightGBM Classifier')
-
-    lgbm = train(X_train, y_train, name='LGBMClassifier')
-    y_pred = lgbm.predict(X_test)
-
-    accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
-
-    accuracy_map['lightgbm_classifier'] = accuracy_score
 
 
 # Ranking
@@ -258,22 +138,93 @@ def run_best_xgboost():
     accuracy_map['best_xgboost_classifier'] = accuracy_score
 
 
+# Grid Search
+def grid_search(name, grid_vals):
+    grid_lr = GridSearchCV(estimator=name, param_grid=grid_vals, scoring='accuracy',
+                           cv=6, refit=True, return_train_score=True)
+
+    # Training and Prediction
+    grid_lr.fit(X_train, y_train)
+    best_params = grid_lr.best_params_
+    #preds = grid_lr.best_estimator_.predict(X_test)
+    print(f"Grid Search preds: {best_params}")
+
+    return best_params
+
+
+def write_best_parameters(function_name, best_args):
+    file_name = "best_params.txt"
+    file_write = open(file_name, 'w')
+
+    file_write.write(function_name)
+    for arg, value in best_args.items():
+        file_write.write("," + arg + "=" + str(value))
+
+    file_write.close()
+
+def try_float(num):
+    try:
+        return float(num)
+    except ValueError:
+        return num
+
+def read_best_parameters(function_name):
+    file_name = "best_params.txt"
+    file_read = open(file_name, 'r')
+
+    for line in file_read.readlines():
+        if function_name in line:
+            line = line.strip()
+            file_read.close()
+            split_args = line.split(',')
+            split_args.pop(0)
+            arg_dict = {}
+            for arg_and_value in split_args:
+                split_arg_and_value = arg_and_value.split('=')
+                arg_name = split_arg_and_value[0]
+                value = split_arg_and_value[1]
+                arg_dict[arg_name] = try_float(value)
+
+            return arg_dict
+    file_read.close()
+    return {}
+
+
 if __name__ == "__main__":
-    run_logistic_regression()
-    run_decision_tree()
-    run_gradient_boosting_machines()
-    run_support_vector_machines()
-    run_random_forest()
-    run_naive_bayes()
-    run_k_nearest_neighbours()
-    run_adaboost()
-    run_xgboost()
-    run_multi_layer_perceptron()
-    run_ridge_classifier()
-    run_passive_aggressive_classifier()
-    run_extremely_randomized_trees()
-    run_lightgbm_classifier()
+    function_names = [
+        {'name': "LogisticRegression", 'max_iter': 10000},
+        {'name': "DecisionTreeClassifier"},
+        {'name': "GradientBoostingClassifier"},
+        {'name': "SVC"},
+        {'name': "RandomForestClassifier"},
+        {'name': "GaussianNB"},
+        {'name': "KNeighborsClassifier"},
+        {'name': "AdaBoostClassifier"},
+        {'name': "XGBClassifier"},
+        {'name': "MLPClassifier"},
+        {'name': "RidgeClassifier"},
+        {'name': "PassiveAggressiveClassifier"},
+        {'name': "ExtraTreesClassifier"},
+        {'name': "LGBMClassifier"},
+    ]
+
+    #for args in function_names:
+        #run_model(**args)
+
+    grid_vals = {'penalty': ['l2'], 'C': [0.001, 0.01, 0.1, 1, 2, 5, 10]}
+
+    for args in function_names:
+        func_name = args['name']
+        best_args:dict = grid_search(return_function_name(**args), grid_vals)
+        write_best_parameters(func_name, best_args)
+
     # run_best_xgboost()
-    run_ranking()
-    run_loop_logistic_regression()
-    run_loop_k_nearest_neighbours()
+    #run_ranking()
+    #run_loop_logistic_regression()
+    #run_loop_k_nearest_neighbours()
+
+    #function_name = "LogisticRegression"
+    #best_args: dict = grid_search(return_function_name(function_name, max_iter=10000), grid_vals)
+    #a = read_best_parameters(function_name)
+    #run_logistic_regression()
+    #run_logistic_regression(**a)

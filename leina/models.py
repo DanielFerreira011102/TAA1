@@ -8,8 +8,8 @@ from sklearn.tree import DecisionTreeClassifier # noqa
 from xgboost import XGBClassifier # noqa
 from lightgbm import LGBMClassifier # noqa
 
-def return_function_name(function_name:str, **kwargs):
-    return eval(function_name + "(**kwargs)")
+def return_function_name(name:str, **kwargs):
+    return eval(name + "(**kwargs)")
 
 def train(X_train, y_train, name='LogisticRegression', **kwargs):
     model = return_function_name(name, **kwargs)
