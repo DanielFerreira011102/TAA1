@@ -39,6 +39,8 @@ def run_model(name, natural_name=None, **kwargs):
 
     accuracy_map[natural_name] = accuracy_score
 
+    return accuracy_score
+
 # Logistic Regression
 def run_logistic_regression(**kwargs):
     logger.info('Running Logistic Regression')
@@ -162,17 +164,26 @@ def write_best_parameters(function_name, best_args):
     file_name = "best_params.txt"
     file_write = open(file_name, 'a')
 
-    file_write.write("\n" + function_name)
+    file_write.write("\n" + 'name=' + function_name)
     for arg, value in best_args.items():
         file_write.write("," + arg + "=" + str(value))
 
     file_write.close()
 
-def try_float(num):
+def try_num(num):
     try:
-        return float(num)
+        return int(num)
     except ValueError:
-        return num
+        try:
+            return float(num)
+        except ValueError:
+            if num == 'False':
+                return False
+            elif num == 'True':
+                return True
+            return num
+
+
 
 def read_best_parameters(function_name):
     file_name = "best_params.txt"
@@ -183,13 +194,12 @@ def read_best_parameters(function_name):
             line = line.strip()
             file_read.close()
             split_args = line.split(',')
-            split_args.pop(0)
             arg_dict = {}
             for arg_and_value in split_args:
                 split_arg_and_value = arg_and_value.split('=')
                 arg_name = split_arg_and_value[0]
                 value = split_arg_and_value[1]
-                arg_dict[arg_name] = try_float(value)
+                arg_dict[arg_name] = try_num(value)
 
             return arg_dict
     file_read.close()
@@ -227,21 +237,27 @@ if __name__ == "__main__":
          'min_samples_leaf': [1, 2, 4],
          'bootstrap': [True, False]}
     ]
-    """
-    for args in function_names:
-        run_model(**args)
-    run_logistic_regression()
-    run_decision_tree()
-    run_xgboost()
-    run_ranking()
-    """
-
-
     for i, args in enumerate(function_names):
         func_name = args['name']
-        if not read_best_parameters(func_name):
+        best_args = read_best_parameters(func_name)
+        if not best_args:
             best_args:dict = grid_search(return_function_name(**args), grid_vals[i])
             write_best_parameters(func_name, best_args)
+        else:
+            acc_bad = run_model(**args)
+            acc_good = run_model(**best_args)
+            print(f"Optimized Arguments made {func_name} {round((acc_good/acc_bad)*100-100, 2)}% better.\n")
+    #"""
+    #for args in function_names:
+        #run_model(**args)
+    #run_logistic_regression()
+    #run_decision_tree()
+    #run_xgboost()
+    #run_ranking()
+    #"""
+
+
+
 
     # run_best_xgboost()
     #run_ranking()
