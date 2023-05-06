@@ -84,7 +84,7 @@ def compare_accuracies(model_names:list, acc_with_args:list, acc_without_args:li
     # Show the plot
     plt.show()
 
-def plot_good_roc(model, X_test, y_test, y_true):
+def plot_good_roc(model, X_test, y_test):
     y_pred_prob = model.predict_proba(X_test)[:, 1]
     # Calculate the FPR, TPR, and thresholds using the roc_curve function
     fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob)

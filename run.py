@@ -37,7 +37,7 @@ def run_model(name, natural_name=None, **kwargs):
 
     accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
     #plot_confusion_matrix(y_test, y_pred)
-    plot_good_roc(lr, X_test, y_test, y_pred)
+    plot_good_roc(lr, X_test, y_test)
 
     accuracy_map[natural_name] = accuracy_score
 
