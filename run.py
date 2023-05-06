@@ -2,8 +2,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from xgboost import XGBClassifier
 
+from sklearn.metrics import precision_score, f1_score, roc_auc_score, recall_score
 from leina.analytics import get_report, plot_confusion_matrix, plot_roc, plot_decision_tree, get_best, \
-    plot_feature_importance
+    plot_feature_importance, compare_accuracies
 from leina.models import train, return_function_name
 from leina.preprocessing import split_data, one_hot_encode, label_encode, ordinal_encode, standard_scale, full_clean
 from utils import Logger, LogLevel
@@ -36,10 +37,14 @@ def run_model(name, natural_name=None, **kwargs):
     accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
     #plot_confusion_matrix(y_test, y_pred)
     #plot_roc(lr, X_test, y_test)
+    precision_score_ = precision_score(y_test, y_pred)
+    roc_auc_score_ = roc_auc_score(y_test, y_pred)
+    recall_score_ = recall_score(y_test, y_pred)
+    f1_score_ = f1_score(y_test, y_pred)
 
     accuracy_map[natural_name] = accuracy_score
 
-    return accuracy_score
+    return accuracy_score, precision_score_, roc_auc_score_, recall_score_, f1_score_
 
 # Logistic Regression
 def run_logistic_regression(**kwargs):
@@ -237,6 +242,9 @@ if __name__ == "__main__":
          'min_samples_leaf': [1, 2, 4],
          'bootstrap': [True, False]}
     ]
+    good_accuracies = []
+    bad_accuracies = []
+    func_names = []
     for i, args in enumerate(function_names):
         func_name = args['name']
         best_args = read_best_parameters(func_name)
@@ -244,9 +252,20 @@ if __name__ == "__main__":
             best_args:dict = grid_search(return_function_name(**args), grid_vals[i])
             write_best_parameters(func_name, best_args)
         else:
-            acc_bad = run_model(**args)
-            acc_good = run_model(**best_args)
+            acc_bad, prec_bad, roc_bad, recall_bad, f1_bad = run_model(**args)
+            acc_good, prec_good, roc_good, recall_good, f1_good = run_model(**best_args)
             print(f"Optimized Arguments made {func_name} {round((acc_good/acc_bad)*100-100, 2)}% better.\n")
+            print(f"Good precision: {prec_good}")
+            print(f"Good ROC: {roc_good}")
+            print(f"Good F1: {f1_good}")
+            print(f"Good Recall: {recall_good}")
+
+            good_accuracies.append(acc_good)
+            bad_accuracies.append(acc_bad)
+            func_names.append(func_name)
+
+    compare_accuracies(func_names, good_accuracies, bad_accuracies)
+
     #"""
     #for args in function_names:
         #run_model(**args)
@@ -255,7 +274,6 @@ if __name__ == "__main__":
     #run_xgboost()
     #run_ranking()
     #"""
-
 
 
 
