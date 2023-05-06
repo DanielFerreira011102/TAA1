@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_curve, auc
 import seaborn as sns
 from sklearn.tree import plot_tree
+import numpy as np
 
 def get_best(accuracy_map, out=True):
     sorted_accuracy_map = sorted(accuracy_map.items(), key=lambda x: x[1], reverse=True)
@@ -53,4 +54,29 @@ def plot_feature_importance(model, features):
     sns.barplot(x=model.feature_importances_, y=features, ax=ax, orient='h')
     ax.set_title('Feature Importance')
     plt.tight_layout()
+    plt.show()
+
+def compare_accuracies(model_names:list, acc_with_args:list, acc_without_args:list):
+    # Define the models and their corresponding accuracies
+    model_names = ["Log Regres", "Decision Tree", "Gradient Boosting", "Random Forest"]
+    # Set the width of the bars
+    bar_width = 0.06 * len(model_names)
+
+    # Set the positions of the bars on the x-axis
+    r1 = np.arange(len(model_names))
+    r2 = [x + bar_width for x in r1]
+
+    # Plot the bars
+    plt.bar(r1, acc_with_args, color='blue', width=bar_width, label='With best hyperparameters')
+    plt.bar(r2, acc_without_args, color='orange', width=bar_width, label='With default hyperparameters')
+    # Add x-axis labels and title
+    plt.xlabel('Models')
+    plt.xticks([r + bar_width / 2 for r in range(len(model_names))], model_names)
+    plt.ylabel('Accuracy')
+    plt.title('Accuracy of Models with and without best hyperparameters')
+
+    # Add a legend
+    plt.legend(loc='lower right')
+
+    # Show the plot
     plt.show()

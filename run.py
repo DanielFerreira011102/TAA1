@@ -2,12 +2,14 @@ import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from xgboost import XGBClassifier
 
+from sklearn.metrics import precision_score, f1_score, roc_auc_score, recall_score
 from leina.analytics import get_report, plot_confusion_matrix, plot_roc, plot_decision_tree, get_best, \
-    plot_feature_importance
+    plot_feature_importance, compare_accuracies
 from leina.models import train, return_function_name
 from leina.preprocessing import split_data, one_hot_encode, label_encode, ordinal_encode, standard_scale, full_clean
 from utils import Logger, LogLevel
 from sklearn.model_selection import GridSearchCV
+import numpy as np
 
 logger = Logger(level=LogLevel.INFO)
 
@@ -35,8 +37,14 @@ def run_model(name, natural_name=None, **kwargs):
     accuracy_score, confusion_matrix, classification_report = get_report(y_test, y_pred)
     #plot_confusion_matrix(y_test, y_pred)
     #plot_roc(lr, X_test, y_test)
+    precision_score_ = precision_score(y_test, y_pred)
+    roc_auc_score_ = roc_auc_score(y_test, y_pred)
+    recall_score_ = recall_score(y_test, y_pred)
+    f1_score_ = f1_score(y_test, y_pred)
 
     accuracy_map[natural_name] = accuracy_score
+
+    return accuracy_score, precision_score_, roc_auc_score_, recall_score_, f1_score_
 
 # Logistic Regression
 def run_logistic_regression(**kwargs):
@@ -143,7 +151,9 @@ def run_best_xgboost():
 
 # Grid Search
 def grid_search(name, grid_vals):
-    grid_lr = GridSearchCV(estimator=name, param_grid=grid_vals, scoring='accuracy',
+    print(f"Performing grid search of {name}")
+
+    grid_lr = GridSearchCV(estimator=name, param_grid=grid_vals, scoring='accuracy', n_jobs=-1, verbose=3,
                            cv=6, refit=True, return_train_score=True)
 
     # Training and Prediction
@@ -157,19 +167,28 @@ def grid_search(name, grid_vals):
 
 def write_best_parameters(function_name, best_args):
     file_name = "best_params.txt"
-    file_write = open(file_name, 'w')
+    file_write = open(file_name, 'a')
 
-    file_write.write(function_name)
+    file_write.write("\n" + 'name=' + function_name)
     for arg, value in best_args.items():
         file_write.write("," + arg + "=" + str(value))
 
     file_write.close()
 
-def try_float(num):
+def try_num(num):
     try:
-        return float(num)
+        return int(num)
     except ValueError:
-        return num
+        try:
+            return float(num)
+        except ValueError:
+            if num == 'False':
+                return False
+            elif num == 'True':
+                return True
+            return num
+
+
 
 def read_best_parameters(function_name):
     file_name = "best_params.txt"
@@ -180,13 +199,12 @@ def read_best_parameters(function_name):
             line = line.strip()
             file_read.close()
             split_args = line.split(',')
-            split_args.pop(0)
             arg_dict = {}
             for arg_and_value in split_args:
                 split_arg_and_value = arg_and_value.split('=')
                 arg_name = split_arg_and_value[0]
                 value = split_arg_and_value[1]
-                arg_dict[arg_name] = try_float(value)
+                arg_dict[arg_name] = try_num(value)
 
             return arg_dict
     file_read.close()
@@ -196,39 +214,70 @@ def read_best_parameters(function_name):
 if __name__ == "__main__":
     function_names = [
         {'name': "LogisticRegression", 'max_iter': 10000, 'penalty': 'l2'},
-        {'name': "LogisticRegression", 'max_iter': 10000, 'penalty': None, 'natural_name': "LogisticsRegressionUnregularized"},
+        #{'name': "LogisticRegression", 'max_iter': 10000, 'penalty': None, 'natural_name': "LogisticsRegressionUnregularized"},
         {'name': "DecisionTreeClassifier"},
         {'name': "GradientBoostingClassifier"},
-        {'name': "SVC"},
         {'name': "RandomForestClassifier"},
-        {'name': "GaussianNB"},
-        {'name': "KNeighborsClassifier"},
-        {'name': "AdaBoostClassifier"},
-        {'name': "XGBClassifier"},
-        {'name': "MLPClassifier"},
-        {'name': "RidgeClassifier"},
-        {'name': "PassiveAggressiveClassifier"},
-        {'name': "ExtraTreesClassifier"},
-        {'name': "LGBMClassifier"},
     ]
-
-    for args in function_names:
-        run_model(**args)
-
-    grid_vals = {'penalty': ['l2'], 'C': [0.001, 0.01, 0.1, 1, 2, 5, 10]}
-
-    for args in function_names:
+    """
+    {'name': "SVC"},
+    {'name': "GaussianNB"},
+    {'name': "KNeighborsClassifier"},
+    {'name': "AdaBoostClassifier"},
+    {'name': "XGBClassifier"},
+    {'name': "MLPClassifier"},
+    {'name': "RidgeClassifier"},
+    {'name': "PassiveAggressiveClassifier"},
+    {'name': "ExtraTreesClassifier"},
+    {'name': "LGBMClassifier"},
+    """
+    grid_vals = [
+        {'penalty': ['l2'], 'C': [0.001, 0.01, 0.1, 1, 2]},
+        {'max_depth': range(1, 21), 'random_state': [42]},
+        {"n_estimators":[5,250,500], "max_depth":[1,5,9], "learning_rate":[0.01,0.1,1]},
+        {'n_estimators': [100, 200, 500, 2000],
+         'max_features': ['sqrt'],
+         'max_depth': [None, 10, 50, 110],
+         'min_samples_split': [2, 5, 10],
+         'min_samples_leaf': [1, 2, 4],
+         'bootstrap': [True, False]}
+    ]
+    good_accuracies = []
+    bad_accuracies = []
+    func_names = []
+    for i, args in enumerate(function_names):
         func_name = args['name']
-        best_args:dict = grid_search(return_function_name(**args), grid_vals)
-        write_best_parameters(func_name, best_args)
+        best_args = read_best_parameters(func_name)
+        if not best_args:
+            best_args:dict = grid_search(return_function_name(**args), grid_vals[i])
+            write_best_parameters(func_name, best_args)
+        else:
+            acc_bad, prec_bad, roc_bad, recall_bad, f1_bad = run_model(**args)
+            acc_good, prec_good, roc_good, recall_good, f1_good = run_model(**best_args)
+            print(f"Optimized Arguments made {func_name} {round((acc_good/acc_bad)*100-100, 2)}% better.\n")
+            print(f"Good precision: {prec_good}")
+            print(f"Good ROC: {roc_good}")
+            print(f"Good F1: {f1_good}")
+            print(f"Good Recall: {recall_good}")
+
+            good_accuracies.append(acc_good)
+            bad_accuracies.append(acc_bad)
+            func_names.append(func_name)
+
+    compare_accuracies(func_names, good_accuracies, bad_accuracies)
+
+    #"""
+    #for args in function_names:
+        #run_model(**args)
+    #run_logistic_regression()
+    #run_decision_tree()
+    #run_xgboost()
+    #run_ranking()
+    #"""
+
+
 
     # run_best_xgboost()
     #run_ranking()
     #run_loop_logistic_regression()
     #run_loop_k_nearest_neighbours()
-
-    #function_name = "LogisticRegression"
-    #best_args: dict = grid_search(return_function_name(function_name, max_iter=10000), grid_vals)
-    #a = read_best_parameters(function_name)
-    #run_logistic_regression()
-    #run_logistic_regression(**a)
