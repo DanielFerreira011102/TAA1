@@ -1,0 +1,15 @@
+\hline
+LR (unreg.) & 0.820 & 0.817 & 0.830 & 0.801 & 0.774 \\
+
+There is relatively little variation in performance across different metrics. Most models have similar scores for accuracy, AUC-ROC, precision, F1, and recall. This suggests that the models are performing similarly overall, and that there may not be a single metric that is clearly more important than the others.
+
+Some models have relatively high precision but lower recall, or vice versa. For example, Gaussian Naive Bayes (GNB) has a high precision of 0.758, but a low recall of 0.633, while MLP has a high recall of 0.816, but a lower precision of 0.747. This suggests that different models may be better suited for different use cases, depending on whether it's more important to minimize false positives or false negatives.
+
+The difference in performance between the best and worst models is relatively small. The best performing model (GBM Light) has an accuracy score of 0.872, while the worst performing model (PA) has an accuracy score of 0.642. While this is a significant difference, it's relatively small compared to the range of possible accuracy scores. This suggests that the models are performing relatively similarly overall, and that there may not be a single model that is clearly superior to all others.
+
+There is relatively little difference in performance between different types of models. For example, logistic regression (LR) and gradient boosting machines (GBM) have similar performance, despite being very different types of models. This suggests that the choice of model may not be as important as other factors such as the quality and quantity of the data, and the preprocessing and feature engineering steps.
+
+This suggests that GBM (Light) may be the best performing model among the methods listed in the table, with highest overall performance across all evaluation metrics.
+
+wrong but written well:
+The choice of evaluation metric can impact the selection of the best model. For example, the Random Forest (CAT) model has the highest AUC-ROC score, which indicates that it has the best overall performance across all classification thresholds. However, the GBM (Light) model has the highest precision score, which may be more important for some applications where minimizing false positives is a priority.
